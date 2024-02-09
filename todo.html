@@ -8,6 +8,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/style.css">
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
@@ -15,10 +16,10 @@
 <body>
     <!-- Première div, point d'entrée de Vue -->
     <div id="app">
-        <div class="container bg-light p-5 mt-4">
+        <div class="container degrad p-5 mt-5">
 
             <!-- Premier appel d'un rendu déclaratif dans le h1 -->
-            <!-- Si veux lier une data de mon vm à un attribut je suis obligé d'utiliser v-bind sinon il n'est pas interprété/rattaché/bindé -->
+            <!-- Si je veux lier une data de mon vm à un attribut je suis obligé d'utiliser v-bind sinon il n'est pas interprété/rattaché/bindé -->
             <h1 v-bind:title="titre" class="text-center p-3">{{titre}}</h1>
 
             <!-- Composant add représente notre input. A l'écoute de l'event new-line, il lance la méthode addTodo du vm -->
@@ -86,10 +87,10 @@
             },
             template: `
             <div class="form-floating mb-2 w-75 mx-auto">
-                <input type="text" v-model="addmsg" class="form-control" placeholder="Saisir une tâche" id="task" name="task">
+                <input type="text" v-model="addmsg" class="form-control" placeholder="Saisir une tâche" @keyup.enter="addLine" id="task" name="task">
                 <label for="task">Ajouter une tâche</label>
             </div>
-            <button class="btn d-block mx-auto w-50" @click="addLine" :disabled="addmsg == ''" :class="{ 'btn-warning': addmsg == '',  'btn-info': addmsg != ''}">Ajouter</button>
+            <button class="btn d-block mx-auto w-50 mt-4" @click="addLine" :disabled="addmsg == ''" :class="{ 'btn-secondary': addmsg == '',  'btn-info': addmsg != ''}">Ajouter</button>
             `
         })
 
