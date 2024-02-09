@@ -16,12 +16,14 @@
     <div id="app">
         <div class="container bg-light">
             <h1 v-bind:title="titre" class="text-center p-3">{{titre}}</h1>
-            <input type="text" v-model="message" class="w-75"> 
-            <!-- {{message}} -->
-            <button class="btn btn-info" @click="ajouterTodo" v-if="message != ''">Ajouter</button>
-            <p v-for="todo in todos" @click="inverser">
+            <!-- <input type="text" v-model="message" class="w-75"> 
+            <button class="btn btn-info" @click="ajouterTodo" v-if="message != ''">Ajouter</button> -->
+             <!-- {{message}} -->
+            <add @new-line="addTodo"></add>
+            <!-- <p v-for="todo in todos" @click="inverser">
                 {{todo}}
-            </p>
+            </p> -->
+            <todoline v-for="todo in todos" v-bind:content="todo" @click="inverser"></todoline>
         </div>
     </div>
 
@@ -45,12 +47,48 @@
                 inverser(){
                     this.todos.reverse();
                 },
-                ajouterTodo(){
-                    this.todos.push(this.message)
-                    this.message = '';
+                // addTodo(){
+                    addTodo(message){
+                    // this.todos.push(this.message)
+                    this.todos.push(message);
+                    // this.message = '';
                 }
             }
-        }).mount("#app")
+        })
+
+        vm.component("todoline", {
+            props: ['content'],
+            template: `
+            <p>
+                {{content}}
+            </p>
+            
+            ` 
+        })
+
+        vm.component("add", {
+            props: [],
+            emits: ["newLine"],
+            data(){
+                return{
+                    addmsg: ''
+                }
+            },
+            methods:{
+                addLine(){
+                    this.$emit('newLine', this.addmsg);
+                    this.addmsg = '';
+                }
+            },
+            template: `
+            <input type="text" v-model="addmsg" class="w-75"> 
+            <button class="btn btn-info" @click="addLine" v-if="addmsg != ''">Ajouter</button>
+            {{addmsg}}
+            `
+        })
+        
+        
+        vm.mount("#app");
     </script>
 
 
