@@ -13,81 +13,87 @@
 </head>
 
 <body>
+    <!-- Première div, point d'entrée de Vue -->
     <div id="app">
-        <div class="container bg-light">
+        <div class="container bg-light p-5 mt-4">
+
+            <!-- Premier appel d'un rendu déclaratif dans le h1 -->
+            <!-- Si veux lier une data de mon vm à un attribut je suis obligé d'utiliser v-bind sinon il n'est pas interprété/rattaché/bindé -->
             <h1 v-bind:title="titre" class="text-center p-3">{{titre}}</h1>
-            <!-- <input type="text" v-model="message" class="w-75"> 
-            <button class="btn btn-info" @click="ajouterTodo" v-if="message != ''">Ajouter</button> -->
-             <!-- {{message}} -->
+
+            <!-- Composant add représente notre input. A l'écoute de l'event new-line, il lance la méthode addTodo du vm -->
             <add @new-line="addTodo"></add>
-            <!-- <p v-for="todo in todos" @click="inverser">
-                {{todo}}
-            </p> -->
-            <todoline v-for="todo in todos" v-bind:content="todo" @click="inverser"></todoline>
+            <br><hr><br>
+
+            <!-- Composant todoline représente les <li> de notre liste de todos, permet de créer autant de li que d'elements dans todos, la liste ne s'affiche pas si l'array todos est vide grâce à la directive v-if -->
+            <ul class="list-group w-100 mx-auto m-1" v-if="todos.length != 0">
+            <!-- La directive v-for nous permet de boucler le composant autant de fois qu'il y a d'éléments dans todos -->
+                <todoline v-for="todo in todos" v-bind:content="todo">
+                </todoline>
+            </ul>
         </div>
     </div>
 
-
-
-
     <script>
+        // Instanciation de notre Vue, qui va intéragir avec notre interface
         const vm = Vue.createApp({
+            // Par data on entend les données que la vue va posséder/récupérer afin de pouvoir les manipuler, que ce soit pour les amener à l'affichage ou pour que l'interface utilisateur les modifie
             data() {
                 return {
-                    titre: "Ma To-Do List",
-                    todos: ["Lancer une lessive", "Faire la vaisselle"],
-                    message: "",
-                    // todos: [
-                    //     { id: 0, description: "tache 1 blabla" },
-                    //     { id: 1, description: "tache 2 blabla" }
-                    // ]
+                    titre: "Ma To-Do List", // titre éventuellement dynamique
+                    todos: ["Lancer une lessive", "Faire la vaisselle"], // liste de la todo, deux éléments déjà présents pour tester
                 }
             },
-            methods:{
-                inverser(){
-                    this.todos.reverse();
-                },
-                // addTodo(){
-                    addTodo(message){
-                    // this.todos.push(this.message)
+            // Déclaration des méthodes de notre Vue, la méthode addTodo pour ajouter la saisie de l'input dans l'array todos
+            methods: {
+                addTodo(message) {
                     this.todos.push(message);
-                    // this.message = '';
                 }
             }
         })
 
+        // Création de notre premier commposant todoline gérant l'affichage des li
         vm.component("todoline", {
-            props: ['content'],
+            props: ['content'], // La props content récupère le contenu d'un élément de todos
+            data() { // On symbolise un retour de données ici à savoir si la checkbox est checked ou pas, par défaut non
+                return {checked:false}
+            },
+            // Le template représente le code html généré par ce composant
             template: `
-            <p>
-                {{content}}
-            </p>
             
-            ` 
+                <li class="list-group-item d-flex justify-content-between align-items-center" :class="{ 'text-decoration-line-through': checked, 'bg-light': checked }">
+                     {{ content }}
+                     <input type="checkbox" class="form-check-input" v-model="checked">
+                </li>
+            
+            `
         })
 
+        // Création du composant add, représentant l'input
         vm.component("add", {
             props: [],
-            emits: ["newLine"],
-            data(){
-                return{
+            emits: ["newLine"], // le emits énonce les évènements sortant de ce component
+            data() { 
+                return {
                     addmsg: ''
                 }
             },
-            methods:{
-                addLine(){
+            methods: {
+                addLine() { // Lorsque cette méthode est lancée, cela lance l'évènement newLine qui transmet la valeur de addmsg
                     this.$emit('newLine', this.addmsg);
                     this.addmsg = '';
                 }
             },
             template: `
-            <input type="text" v-model="addmsg" class="w-75"> 
-            <button class="btn btn-info" @click="addLine" v-if="addmsg != ''">Ajouter</button>
-            {{addmsg}}
+            <div class="form-floating mb-2 w-75 mx-auto">
+                <input type="text" v-model="addmsg" class="form-control" placeholder="Saisir une tâche" id="task" name="task">
+                <label for="task">Ajouter une tâche</label>
+            </div>
+            <button class="btn d-block mx-auto w-50" @click="addLine" :disabled="addmsg == ''" :class="{ 'btn-warning': addmsg == '',  'btn-info': addmsg != ''}">Ajouter</button>
             `
         })
-        
-        
+
+        // mount nous permet de rattacher notre instance Vue à un élément html
         vm.mount("#app");
     </script>
 
